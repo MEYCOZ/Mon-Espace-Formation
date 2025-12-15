@@ -18,7 +18,7 @@ body {
   background-color: #ffffff;
 }
 
-/* 3. LE POINT IMPORTANT : On force l'application à prendre toute la largeur */
+
 #root {
   max-width: 100%;
   width: 100%;
