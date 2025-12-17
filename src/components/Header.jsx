@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { theme } from '../utils/theme';
-import { Link } from 'react-router-dom'; // Import Link
+import { Link } from 'react-router-dom';
 
 const Header = () => {
     return (

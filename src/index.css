@@ -1,9 +1,9 @@
-/* src/index.css */
 
-/* 1. Import de la police Poppins */
+
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-/* 2. Reset des marges par défaut */
+
 :root {
   font-family: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
