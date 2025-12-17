@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Catalogue from './pages/Catalogue';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CourseDetails from './pages/CourseDetails';
 
 function App() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/formations" element={<Catalogue />} />
+          <Route path="/formations/:id" element={<CourseDetails />} />
           <Route path="/connexion" element={<Login />} />
           <Route path="/inscription" element={<Register />} />
         </Routes>
