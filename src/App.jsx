@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
@@ -14,6 +14,11 @@ function App() {
   const location = useLocation();
   // On détecte si on est sur une page d'authentification
   const isAuthPage = location.pathname === '/connexion' || location.pathname === '/inscription';
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="d-flex flex-column min-vh-100">
