@@ -5,7 +5,7 @@ import { theme } from '../utils/theme';
 
 const Footer = () => {
     return (
-        <footer className="pt-5 pb-3" style={{ backgroundColor: '#062a57', color: 'white', fontSize: '0.9rem' }}>
+        <footer className="pt-5 pb-3" style={{ backgroundColor: theme.colors.bgFooter, color: 'white', fontSize: '0.9rem' }}>
             <Container>
                 <Row className="gy-4 mb-5">
                     <Col lg={4}>

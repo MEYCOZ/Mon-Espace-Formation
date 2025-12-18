@@ -11,6 +11,7 @@ export const theme = {
         purple: '#A142F4',
         red: '#EA4335',
         teal: '#00ACC1',
+        bgFooter: '#062a57',
     },
     fonts: {
         main: "'', sans-serif",
