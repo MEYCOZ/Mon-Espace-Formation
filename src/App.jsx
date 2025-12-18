@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
@@ -8,12 +8,18 @@ import Home from './pages/Home';
 import Catalogue from './pages/Catalogue';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import CourseDetails from './pages/CourseDetails';
 import About from './pages/About';
 
 function App() {
   const location = useLocation();
   // On détecte si on est sur une page d'authentification
   const isAuthPage = location.pathname === '/connexion' || location.pathname === '/inscription';
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -25,6 +31,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/formations" element={<Catalogue />} />
+          <Route path="/formations/:id" element={<CourseDetails />} />
           <Route path="/connexion" element={<Login />} />
           <Route path="/inscription" element={<Register />} />
           <Route path="/about" element={<About />} />

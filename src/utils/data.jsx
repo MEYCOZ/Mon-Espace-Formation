@@ -38,7 +38,73 @@ export const catalogueData = [
         level: "Intermédiaire",
         price: "2490€",
         sessions: 3,
-        color: theme.colors.accent
+        color: theme.colors.accent,
+        objectives: [
+            "Comprendre l'écosystème React et ses concepts fondamentaux",
+            "Maîtriser TypeScript pour un code robuste et maintenable",
+            "Créer des composants réutilisables et performants",
+            "Gérer l'état d'application avec les hooks React",
+            "Implémenter le routage et la navigation",
+            "Consommer des APIs REST et gérer les données asynchrones",
+            "Appliquer les bonnes pratiques de développement"
+        ],
+        program: [
+            {
+                title: "Module 1 : Introduction à React et TypeScript",
+                time: "7h",
+                content: [
+                    "Installation et configuration de l'environnement",
+                    "JSX et TSX : syntaxe et bonnes pratiques",
+                    "Composants fonctionnels et props typées",
+                    "Structure d'un projet React/TypeScript"
+                ]
+            },
+            {
+                title: "Module 2 : Gestion de l'état et hooks",
+                time: "7h",
+                content: [
+                    "useState et useEffect",
+                    "useContext pour le state management global",
+                    "useReducer pour les états complexes",
+                    "Custom hooks et réutilisabilité"
+                ]
+            },
+            {
+                title: "Module 3 : Routage et navigation",
+                time: "7h",
+                content: [
+                    "React Router : configuration et utilisation",
+                    "Routes dynamiques et paramètres",
+                    "Navigation programmatique",
+                    "Protection des routes"
+                ]
+            },
+            {
+                title: "Module 4 : Requêtes API et données asynchrones",
+                time: "7h",
+                content: [
+                    "Fetch API et Axios",
+                    "Gestion des erreurs et loading states",
+                    "Optimisation des requêtes",
+                    "Introduction à React Query"
+                ]
+            },
+            {
+                title: "Module 5 : Bonnes pratiques et déploiement",
+                time: "7h",
+                content: [
+                    "Tests unitaires avec Jest et React Testing Library",
+                    "Optimisation des performances",
+                    "Build et déploiement",
+                    "Projet final et mise en pratique"
+                ]
+            }
+        ],
+        prerequisites: [
+            "Bonnes connaissances en HTML, CSS et JavaScript",
+            "Bases de la programmation orientée objet",
+            "Expérience avec un éditeur de code (VS Code recommandé)"
+        ]
     },
     {
         id: 2,

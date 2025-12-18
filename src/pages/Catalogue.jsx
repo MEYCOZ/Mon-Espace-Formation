@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Container, Row, Col, Form, InputGroup, Button, Card } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { FaSearch, FaClock, FaUser, FaArrowRight, FaFilter } from 'react-icons/fa';
@@ -127,6 +128,8 @@ const Catalogue = () => {
 
 
                                         <Button
+                                            as={Link}
+                                            to={`/formations/${formation.id}`}
                                             variant="primary"
                                             className="w-100 rounded-0 py-2 d-flex justify-content-center align-items-center gap-2 fw-medium"
                                             style={{ backgroundColor: theme.colors.primary, border: 'none' }}

@@ -1,11 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { FaBullseye, FaLightbulb, FaUsers, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
 import { theme } from '../utils/theme';
 import { formationsData, featuresData } from '../utils/data';
 
-
+// --- Configuration des Animations ---
 const fadeInUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
@@ -124,7 +125,15 @@ const Home = () => {
                             ))}
                         </Row>
                         <div className="text-center mt-5">
-                            <Button size="lg" className="px-5 py-2 border-0 rounded-1" style={{ backgroundColor: theme.colors.primary }}>Voir toutes les formations</Button>
+                            <Button
+                                as={Link}
+                                to="/formations"
+                                size="lg"
+                                className="px-5 py-2 border-0 rounded-1"
+                                style={{ backgroundColor: theme.colors.primary, textDecoration: 'none' }}
+                            >
+                                Voir toutes les formations
+                            </Button>
                         </div>
                     </motion.div>
                 </Container>
