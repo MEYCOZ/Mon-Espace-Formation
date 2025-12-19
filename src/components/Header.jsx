@@ -23,7 +23,7 @@ const Header = () => {
                         <Nav.Link as={Link} to="/" className="fw-medium text-dark">Accueil</Nav.Link>
                         <Nav.Link as={Link} to="/formations" className="fw-medium text-dark">Formations</Nav.Link>
                         <Nav.Link as={Link} to="/about" className="fw-medium text-dark">A Propos</Nav.Link>
-                        <Nav.Link href="/#contact" className="fw-medium text-dark">Contact</Nav.Link>
+                        <Nav.Link as={Link} to="/contact" className="fw-medium text-dark">Contact</Nav.Link>
 
                         {/* BOUTON MON COMPTE -> Redirige vers /connexion */}
                         <Button
