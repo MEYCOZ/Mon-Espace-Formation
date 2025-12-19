@@ -1,243 +1,207 @@
+// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from 'react';
 import './Dashboard.css';
-import { Calendar, Clock, MapPin, Download, FileText, CheckCircle, Mail, AlertCircle, Phone } from 'lucide-react';
-
-// 👇 TENTATIVE D'IMPORT DU THÈME
-// Si ton fichier est ailleurs, change juste le chemin ici (ex: '../styles/theme')
-let theme = {};
-try {
-  theme = require('../theme').default || require('../theme');
-} catch (e) {
-  console.warn("Theme.js non trouvé, utilisation du style par défaut.");
-}
+import { Calendar, Clock, MapPin, Download, FileText, CheckCircle, Mail, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // IMPORT AJOUTÉ
 
 const Dashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate(); // INITIALISATION
 
-  // --- 1. RÉCUPÉRATION DES DONNÉES (BACKEND JAVA) ---
   useEffect(() => {
-    // On utilise l'email de test (ou celui stocké dans le localStorage si tu as une vraie connexion)
-    const userEmail = "mzenati829@gmail.com"; 
+    // 1. On récupère l'email sauvegardé lors du login
+    const userEmail = localStorage.getItem('userEmail');
 
+    // 2. Sécurité : Si pas d'email, on renvoie vers la connexion
+    if (!userEmail) {
+        navigate('/connexion');
+        return;
+    }
+
+    // 3. Appel API avec l'email dynamique
     fetch(`http://localhost:8080/api/dashboard/${userEmail}`)
-      .then((response) => {
-        if (!response.ok) throw new Error('Erreur réseau');
-        return response.json();
-      })
-      .then((data) => {
-        setData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Erreur backend:", err);
-        setError("Impossible de charger vos données.");
-        setLoading(false);
+      .then((res) => res.ok ? res.json() : Promise.reject(res))
+      .then((data) => { setData(data); setLoading(false); })
+      .catch((err) => { 
+          console.error(err); 
+          setLoading(false); 
+          // Optionnel : si erreur, on peut aussi rediriger ou afficher un message
       });
-  }, []);
+  }, [navigate]);
 
-  // --- 2. GESTION DES ÉTATS DE CHARGEMENT ---
-  if (loading) return <div className="loading-screen">Chargement de votre espace...</div>;
-  if (error) return <div className="error-screen">{error}</div>;
-  if (!data) return null;
+  if (loading) return <div className="text-center mt-5">Chargement...</div>;
+  if (!data) return <div className="text-center mt-5 text-danger">Erreur de chargement ou utilisateur introuvable.</div>;
 
   const { user, currentTraining } = data;
 
-  // --- 3. STYLE DYNAMIQUE (THEME OU DÉFAUT) ---
-  // On utilise tes couleurs si elles existent, sinon on met le Gris Foncé de ton image
-  const headerStyle = {
-    backgroundColor: theme?.colors?.primary || theme?.palette?.primary?.main || '#2d3748', 
-    color: '#ffffff'
-  };
-
+  // ... (LE RESTE DE TON RENDU RESTE EXACTEMENT LE MÊME) ...
   return (
-    <div className="dashboard-container">
+    <div className="container py-4">
       
-      {/* === EN-TÊTE (Header) === */}
-      <div className="welcome-section" style={headerStyle}>
-        <div className="avatar-circle">
-          {user.prenom.charAt(0)}{user.nom.charAt(0)}
+      {/* HEADER BIENVENUE */}
+      <div className="p-4 mb-4 rounded-3 text-white d-flex align-items-center gap-3 welcome-header">
+        <div className="avatar-circle bg-white text-dark d-flex justify-content-center align-items-center rounded-circle fw-bold fs-4">
+            {user.prenom.charAt(0)}{user.nom.charAt(0)}
         </div>
-        <div className="welcome-text">
-          <h1>Bonjour {user.prenom} {user.nom}</h1>
-          <p className="subtitle">TechCorp Solutions • Développeuse Web</p>
+        <div>
+            <h1 className="h3 mb-1">Bonjour {user.prenom} {user.nom}</h1>
+            <p className="mb-0 opacity-75 small">TechCorp Solutions • Développeuse Web</p>
         </div>
       </div>
 
-      <div className="dashboard-grid">
+      <div className="row g-4">
         
-        {/* === COLONNE GAUCHE (Formation) === */}
-        <div className="main-content">
+        {/* === COLONNE GAUCHE (Main) === */}
+        <div className="col-lg-8">
             
-            {/* Alerte Info */}
-            <div className="info-alert">
-                <AlertCircle className="alert-icon" size={20} />
-                <span>
-                    <strong>Formation à venir</strong> : Votre formation commence dans {currentTraining?.duration ? "quelques jours" : "bientôt"}.
-                </span>
+            {/* Alerte */}
+            <div className="alert alert-light border d-flex align-items-center gap-2 mb-4">
+                <AlertCircle size={20} className="text-secondary"/>
+                <span className="small"><strong>Formation à venir :</strong> Votre formation commence dans {currentTraining?.duration || "bientôt"}.</span>
             </div>
 
             {/* Carte Formation */}
-            <div className="card training-card">
-                <div className="card-header">
+            <div className="card shadow-sm border-light mb-4">
+                <div className="card-body p-4">
+                    <div className="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h2 className="h4 mb-1">{currentTraining?.title}</h2>
+                            <p className="text-muted small mb-0">{currentTraining?.reference} • {currentTraining?.sessionRef}</p>
+                        </div>
+                        <span className="badge bg-dark rounded-pill">À Venir</span>
+                    </div>
+
+                    <div className="row g-3 mb-4">
+                        <div className="col-md-6 d-flex gap-2">
+                            <Calendar size={18} className="text-muted"/>
+                            <div>
+                                <small className="text-muted d-block">Dates</small>
+                                <span className="fw-semibold">{currentTraining?.startDate} - {currentTraining?.endDate}</span>
+                            </div>
+                        </div>
+                        <div className="col-md-6 d-flex gap-2">
+                            <Clock size={18} className="text-muted"/>
+                            <div>
+                                <small className="text-muted d-block">Horaires</small>
+                                <span className="fw-semibold">9h00 - 17h00</span>
+                            </div>
+                        </div>
+                        <div className="col-12 d-flex gap-2">
+                            <MapPin size={18} className="text-muted"/>
+                            <div>
+                                <small className="text-muted d-block">Lieu</small>
+                                <span className="fw-semibold">{currentTraining?.location}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section Formateur */}
+                    <div className="bg-light p-3 rounded d-flex align-items-center gap-3 mb-4">
+                        <div className="rounded-circle bg-secondary bg-opacity-25 d-flex justify-content-center align-items-center" style={{width: 40, height: 40}}>JM</div>
+                        <div>
+                            <p className="mb-0 fw-bold">{currentTraining?.trainerName}</p>
+                            <small className="text-muted d-block">{currentTraining?.trainerRole}</small>
+                            <a href={`mailto:${currentTraining?.trainerEmail}`} className="small text-decoration-none text-secondary">
+                                <Mail size={12} className="me-1"/>{currentTraining?.trainerEmail}
+                            </a>
+                        </div>
+                    </div>
+
+                    {/* Progression */}
                     <div>
-                        <h2>{currentTraining?.title || "Formation"}</h2>
-                        <p className="ref-text">
-                            {currentTraining?.reference || "REF-000"} • {currentTraining?.sessionRef || "SESSION-000"}
-                        </p>
-                    </div>
-                    <span className="badge-status">À Venir</span>
-                </div>
-
-                <div className="training-details-grid">
-                    <div className="detail-item">
-                        <Calendar className="icon" size={18} />
-                        <div>
-                            <span className="label">Dates de formation</span>
-                            <p>{currentTraining?.startDate} - {currentTraining?.endDate}</p>
+                        <div className="d-flex justify-content-between small text-muted mb-1">
+                            <span>Progression</span>
+                            <span>0 / 5 Jours</span>
                         </div>
-                    </div>
-                    <div className="detail-item">
-                        <Clock className="icon" size={18} />
-                        <div>
-                            <span className="label">Horaires</span>
-                            <p>9h00 - 17h00</p> 
+                        <div className="progress" style={{height: '8px'}}>
+                            <div className="progress-bar bg-success" role="progressbar" style={{width: '0%'}}></div>
                         </div>
-                    </div>
-                    <div className="detail-item full-width">
-                        <MapPin className="icon" size={18} />
-                        <div>
-                            <span className="label">Lieu</span>
-                            <p>{currentTraining?.location || "Lieu non défini"}</p>
+                        <div className="d-flex justify-content-between small text-muted mt-1">
+                            <span>0h / 35h effectuées</span>
+                            <span>Présence : 0%</span>
                         </div>
-                    </div>
-                </div>
-
-                {/* Formateur */}
-                <div className="trainer-section">
-                    <div className="trainer-avatar">JM</div>
-                    <div className="trainer-info">
-                        <span className="label">Votre formateur</span>
-                        <p className="trainer-name">{currentTraining?.trainerName || "Non assigné"}</p>
-                        <p className="trainer-role">{currentTraining?.trainerRole || "Formateur expert"}</p>
-                        <a href={`mailto:${currentTraining?.trainerEmail}`} className="trainer-email">
-                           <Mail size={14} style={{display:'inline', marginRight:'5px'}}/> 
-                           {currentTraining?.trainerEmail || "email@exemple.com"}
-                        </a>
-                    </div>
-                </div>
-
-                {/* Progression (Fausse donnée pour l'UI car pas en base) */}
-                <div className="progress-section">
-                    <div className="progress-header">
-                        <span>Progression</span>
-                        <span>0 / 5 Jours</span>
-                    </div>
-                    <div className="progress-bar-bg">
-                        <div className="progress-bar-fill" style={{width: '0%'}}></div>
-                    </div>
-                    <div className="progress-footer">
-                        <span>0h / 35h effectuées</span>
-                        <span>Taux de présence : 0%</span>
                     </div>
                 </div>
             </div>
 
-            {/* Liste des Ressources (Partie Basse) */}
-            <div className="tabs-container">
-                <button className="tab active">Documents de formation</button>
-                <button className="tab">Émargement</button>
-                <button className="tab">Attestation</button>
-            </div>
+            {/* Liste Ressources */}
+            <h5 className="mb-1">Documents et ressources</h5>
+            <p className="text-muted small mb-3">Accédez aux supports de cours</p>
 
-            <div className="resources-list">
-                <p className="section-title">Documents et ressources</p>
-                <p className="section-subtitle">Accédez aux supports de cours et ressources pédagogique</p>
-
-                <div className="resource-item">
-                    <div className="file-icon-box"><FileText /></div>
-                    <div className="file-info">
-                        <h4>Programme détaillé</h4>
-                        <p>Plan de formation jour par jour • 2.4 MB</p>
+            <div className="list-group mb-4">
+                <div className="list-group-item list-group-item-action d-flex align-items-center p-3 border-light shadow-sm mb-2 rounded">
+                    <div className="p-2 bg-primary bg-opacity-10 text-primary rounded me-3">
+                        <FileText size={20}/>
                     </div>
-                    <button className="btn-download"><Download size={16} /> Télécharger</button>
+                    <div className="flex-grow-1">
+                        <h6 className="mb-0">Programme détaillé</h6>
+                        <small className="text-muted">PDF • 2.4 MB</small>
+                    </div>
+                    <button className="btn btn-sm btn-light border"><Download size={14} className="me-1"/> Télécharger</button>
                 </div>
-
-                <div className="resource-item disabled">
-                    <div className="file-icon-box"><FileText /></div>
-                    <div className="file-info">
-                        <h4>Support de cours - Jour 1</h4>
-                        <p>Introduction à React • 5.1 MB</p>
+                
+                <div className="list-group-item d-flex align-items-center p-3 border-light bg-light rounded opacity-75">
+                    <div className="p-2 bg-secondary bg-opacity-10 text-secondary rounded me-3">
+                        <FileText size={20}/>
                     </div>
-                    <span className="status-pill">Bientôt disponible</span>
+                    <div className="flex-grow-1">
+                        <h6 className="mb-0">Support J1</h6>
+                        <small className="text-muted">Bientôt disponible</small>
+                    </div>
+                    <span className="badge bg-secondary bg-opacity-25 text-dark">Indisponible</span>
                 </div>
             </div>
+
         </div>
 
         {/* === COLONNE DROITE (Sidebar) === */}
-        <div className="sidebar">
+        <div className="col-lg-4">
             
-            {/* Mes Documents Dynamiques */}
-            <div className="card sidebar-card">
-                <h3>Mes documents</h3>
-                <div className="document-list">
-                    {currentTraining?.documents && currentTraining.documents.length > 0 ? (
-                        currentTraining.documents.map((doc, index) => (
-                            <div key={index} className="sidebar-doc-item">
-                                <div className="doc-content">
-                                    <strong>{doc.title}</strong>
-                                    <p>{doc.ref}</p>
-                                    <span className="doc-tag">{doc.type}</span>
-                                </div>
-                                <Download className="doc-download-icon" size={18} />
+            {/* Mes Documents */}
+            <div className="card shadow-sm border-light mb-4">
+                <div className="card-header bg-white border-bottom-0 pt-3 pb-0">
+                    <h6 className="fw-bold">Mes documents</h6>
+                </div>
+                <div className="card-body">
+                    {currentTraining?.documents?.map((doc, idx) => (
+                        <div key={idx} className="d-flex justify-content-between align-items-center py-2 border-bottom">
+                            <div>
+                                <small className="d-block fw-bold text-dark">{doc.title}</small>
+                                <span className="badge bg-light text-secondary border">{doc.type}</span>
                             </div>
-                        ))
-                    ) : (
-                        <p className="no-doc">Aucun document disponible.</p>
-                    )}
+                            <button className="btn btn-link text-secondary p-0"><Download size={18}/></button>
+                        </div>
+                    ))}
+                    {!currentTraining?.documents?.length && <small>Aucun document.</small>}
                 </div>
             </div>
 
-            {/* Actions Rapides */}
-            <div className="card sidebar-card">
-                <h3>Actions Rapides</h3>
-                <div className="actions-list">
-                    <button className="btn-action"><Calendar size={16}/> Ajouter au calendrier</button>
-                    <button className="btn-action"><MapPin size={16}/> Itinéraire vers le lieu</button>
-                    <button className="btn-action"><Mail size={16}/> Contacter le formateur</button>
+            {/* Actions */}
+            <div className="card shadow-sm border-light mb-4">
+                <div className="card-header bg-white border-bottom-0 pt-3 pb-0">
+                     <h6 className="fw-bold">Actions Rapides</h6>
+                </div>
+                <div className="card-body d-grid gap-2">
+                    <button className="btn btn-outline-secondary text-start btn-sm"><Calendar size={14} className="me-2"/> Ajouter au calendrier</button>
+                    <button className="btn btn-outline-secondary text-start btn-sm"><MapPin size={14} className="me-2"/> Itinéraire</button>
+                    <button className="btn btn-outline-secondary text-start btn-sm"><Mail size={14} className="me-2"/> Contacter formateur</button>
                 </div>
             </div>
 
-            {/* Statistiques */}
-            <div className="card sidebar-card">
-                <h3>Mes statistiques</h3>
-                <div className="stats-list">
-                    <div className="stat-row">
-                        <span><FileText size={16}/> Formations suivies</span>
-                        <strong>0</strong>
+            {/* Stats */}
+            <div className="card shadow-sm border-light mb-4">
+                <div className="card-body">
+                    <h6 className="fw-bold mb-3">Statistiques</h6>
+                    <div className="d-flex justify-content-between mb-2 small">
+                        <span className="text-muted"><FileText size={14} className="me-2"/> Formations</span>
+                        <strong>{data.stats?.formationsSuivies || 0}</strong>
                     </div>
-                    <div className="stat-row">
-                        <span><Clock size={16}/> Heures de formation</span>
-                        <strong>0h</strong>
-                    </div>
-                    <div className="stat-row">
-                        <span><CheckCircle size={16}/> Attestations</span>
-                        <strong>0</strong>
+                    <div className="d-flex justify-content-between mb-2 small">
+                        <span className="text-muted"><Clock size={14} className="me-2"/> Heures</span>
+                        <strong>{data.stats?.heuresFormation || 0}h</strong>
                     </div>
                 </div>
-            </div>
-
-            {/* Besoin d'aide */}
-            <div className="help-box">
-                <h3>Besoin d'aide ?</h3>
-                <p className="help-label">Email</p>
-                <a href="mailto:contact@txlforma.fr" className="help-link">contact@txlforma.fr</a>
-                
-                <p className="help-label">Téléphone</p>
-                <p className="help-phone">+33 1 23 45 67 89</p>
-                <div className="help-separator"></div>
-                <p className="help-note">Du lundi au vendredi de 9h à 18h</p>
             </div>
 
         </div>

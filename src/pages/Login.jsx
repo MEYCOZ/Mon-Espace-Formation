@@ -32,8 +32,12 @@ const Login = () => {
             if (response.ok) {
                 // Si la connexion réussit :
                 console.log("Connecté :", data);
-                localStorage.setItem('user', JSON.stringify(data)); // On sauvegarde la session
-                navigate('/'); // On redirige vers l'accueil
+                // On sauvegarde la session (pour le dashboard)
+                localStorage.setItem('user', JSON.stringify(data)); 
+                // On sauvegarde aussi l'email spécifiquement pour ton dashboard actuel
+                localStorage.setItem('userEmail', email);
+
+                navigate('/dashboard'); // On redirige vers l'accueil
             } else {
                 // Si le serveur refuse (mauvais mot de passe, etc.)
                 setError(data.message || "Email ou mot de passe incorrect");

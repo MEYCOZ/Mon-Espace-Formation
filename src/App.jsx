@@ -11,8 +11,12 @@ import Register from './pages/Register';
 import CourseDetails from './pages/CourseDetails';
 import About from './pages/About';
 
+// 👇 1. IMPORT DU DASHBOARD
+import Dashboard from './pages/Dashboard'; 
+
 function App() {
   const location = useLocation();
+  
   // On détecte si on est sur une page d'authentification
   const isAuthPage = location.pathname === '/connexion' || location.pathname === '/inscription';
 
@@ -25,6 +29,7 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
 
       {/* Affiche le Header SEULEMENT si on n'est PAS sur login/register */}
+      {/* Note : Le Dashboard aura donc le Header, ce qui est normal */}
       {!isAuthPage && <Header />}
 
       <main className="flex-grow-1">
@@ -35,6 +40,10 @@ function App() {
           <Route path="/connexion" element={<Login />} />
           <Route path="/inscription" element={<Register />} />
           <Route path="/about" element={<About />} />
+
+          {/* 👇 2. AJOUT DE LA ROUTE DASHBOARD */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          
         </Routes>
       </main>
 

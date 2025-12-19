@@ -1,0 +1,291 @@
+/* src/pages/Dashboard.css */
+
+/* --- 1. CONFIGURATION GLOBALE --- */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f8f9fa; /* Le fond gris clair de tout le site */
+    min-height: 100vh;
+    color: #374151; /* Couleur de texte gris foncé (plus doux que le noir) */
+}
+
+/* --- 2. EN-TÊTE NOIR (BIENVENUE) --- */
+.welcome-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding: 25px 30px;
+    border-radius: 12px;
+    /* Le fond sera géré par le JSX, mais par défaut on met le gris foncé */
+    background-color: #2d3748; 
+    color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.avatar-circle {
+    width: 60px;
+    height: 60px;
+    min-width: 60px; /* Empêche l'écrasement */
+    background-color: white;
+    color: #1f2937;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.welcome-text h1 {
+    margin: 0 0 5px 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.welcome-text .subtitle {
+    margin: 0;
+    opacity: 0.85;
+    font-size: 0.95rem;
+    font-weight: 400;
+}
+
+/* --- 3. GRILLE PRINCIPALE (GAUCHE / DROITE) --- */
+.dashboard-grid {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.main-content {
+    flex: 2; /* La colonne de gauche prend 66% de la place */
+}
+
+.sidebar {
+    flex: 1; /* La colonne de droite prend 33% de la place */
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Responsive : Sur mobile, on passe en colonne unique */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        flex-direction: column;
+    }
+}
+
+/* --- 4. DESIGN DES CARTES (CARDS) --- */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid #e5e7eb; /* Bordure grise très fine */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Ombre légère */
+    margin-bottom: 24px;
+}
+
+/* --- 5. BANDEAU D'ALERTE GRIS --- */
+.info-alert {
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 16px 20px;
+    border-radius: 8px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    color: #1f2937;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+}
+
+/* --- 6. DÉTAILS DE LA FORMATION --- */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.card-header h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+    color: #111827;
+}
+
+.ref-text {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.badge-status {
+    background-color: #374151;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.training-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.detail-item {
+    display: flex;
+    gap: 14px;
+}
+.detail-item.full-width {
+    grid-column: span 2;
+}
+
+.detail-item .label {
+    display: block;
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.detail-item p {
+    margin: 0;
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+/* --- 7. SECTION FORMATEUR --- */
+.trainer-section {
+    background-color: #f9fafb;
+    padding: 16px;
+    border-radius: 10px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 30px;
+    border: 1px solid #f3f4f6;
+}
+
+.trainer-avatar {
+    width: 48px;
+    height: 48px;
+    background-color: #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    font-weight: bold;
+}
+
+.trainer-name { margin: 0; font-weight: 600; color: #1f2937; }
+.trainer-role { margin: 0; font-size: 0.85rem; color: #6b7280; margin-bottom: 4px; }
+.trainer-email { font-size: 0.85rem; color: #4b5563; text-decoration: none; display: flex; align-items: center; }
+
+/* --- 8. BARRE DE PROGRESSION --- */
+.progress-header { display: flex; justify-content: space-between; font-size: 0.9rem; color: #4b5563; margin-bottom: 8px;}
+.progress-bar-bg { height: 8px; background-color: #e5e7eb; border-radius: 4px; overflow: hidden; margin-bottom: 8px;}
+.progress-bar-fill { height: 100%; background-color: #10b981; }
+.progress-footer { display: flex; justify-content: space-between; font-size: 0.8rem; color: #9ca3af; }
+
+/* --- 9. LISTE DES RESSOURCES --- */
+.section-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 6px; color: #111827;}
+.section-subtitle { color: #6b7280; font-size: 0.95rem; margin-top: 0; margin-bottom: 24px; }
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    background: white;
+}
+
+.file-icon-box {
+    background: #eff6ff;
+    color: #3b82f6;
+    padding: 12px;
+    border-radius: 8px;
+    margin-right: 16px;
+}
+
+.file-info h4 { margin: 0 0 4px 0; font-size: 1rem; color: #1f2937; }
+.file-info p { margin: 0; font-size: 0.85rem; color: #6b7280; }
+
+.btn-download {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* --- 10. SIDEBAR DROITE --- */
+.sidebar-card h3 {
+    margin-top: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 12px;
+}
+
+.sidebar-doc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+.doc-tag { font-size: 0.7rem; background: #f3f4f6; padding: 2px 8px; border-radius: 4px; color: #4b5563; }
+
+.btn-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    color: #4b5563;
+    font-weight: 500;
+    margin-bottom: 10px;
+    transition: background 0.2s;
+}
+.btn-action:hover { background-color: #f9fafb; }
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f9fafb;
+}
+
+/* --- 11. BOÎTE D'AIDE --- */
+.help-box {
+    background: #e5e7eb;
+    padding: 24px;
+    border-radius: 12px;
+}
+.help-box h3 { margin-top: 0; font-size: 1rem; margin-bottom: 16px; }
+.help-label { font-size: 0.8rem; text-transform: uppercase; color: #6b7280; margin-bottom: 4px; margin-top: 12px; }
+.help-link, .help-phone { font-weight: 600; color: #1f2937; margin: 0; text-decoration: none; font-size: 1rem; }
