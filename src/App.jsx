@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import CourseDetails from './pages/CourseDetails';
 import About from './pages/About';
+import Contact from './pages/Contact';
 
 // 👇 1. IMPORT DU DASHBOARD
 import Dashboard from './pages/Dashboard'; 
@@ -40,6 +41,7 @@ function App() {
           <Route path="/connexion" element={<Login />} />
           <Route path="/inscription" element={<Register />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
 
           {/* 👇 2. AJOUT DE LA ROUTE DASHBOARD */}
           <Route path="/dashboard" element={<Dashboard />} />

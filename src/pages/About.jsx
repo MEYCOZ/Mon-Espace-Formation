@@ -234,7 +234,7 @@ const About = () => {
                     <motion.div>
                         <Row className="gap-3 gap-lg-0">
                             <Col xs={12} sm={12} lg={6} className="d-flex justify-content-lg-end justify-content-center"><Link to="/formations" className='btn rounded px-4 py-2' style={{ backgroundColor: theme.colors.accent, color: theme.colors.primary, textDecoration: 'none' }}><span><IoBookOutline size={20} color={theme.colors.primary} /></span> Découvrir nos formations</Link></Col>
-                            <Col xs={12} sm={12} lg={6} className="d-flex justify-content-lg-start justify-content-center"><button type="button" className='btn text-white rounded px-4 py-2 bg-transparent border-1  border-white'><span><FaEnvelope size={20} color={theme.colors.white} /></span> Nous contacter</button></Col>
+                            <Col xs={12} sm={12} lg={6} className="d-flex justify-content-lg-start justify-content-center"><Link to="/contact" type="button" className='btn text-white rounded px-4 py-2 bg-transparent border-1  border-white'><span><FaEnvelope size={20} color={theme.colors.white} /></span> Nous contacter</Link></Col>
                         </Row>
                     </motion.div>
                     <div style={{ margin: '40px auto 0', width: '90%', maxWidth: '50%', borderBottom: '1px solid rgba(255,255,255,0.3)' }}></div>
