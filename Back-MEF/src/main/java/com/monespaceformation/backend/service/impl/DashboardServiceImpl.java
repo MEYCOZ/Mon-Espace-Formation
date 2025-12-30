@@ -14,6 +14,9 @@ import java.util.Optional;
 public class DashboardServiceImpl implements DashboardService {
 
     private final UserRepository userRepository;
+    
+    // Je garde cette ligne même si elle est jaune pour l'instant, 
+    // car on s'en servira bientôt pour chercher les vraies formations.
     private final TrainingRepository trainingRepository;
 
     public DashboardServiceImpl(UserRepository userRepository, TrainingRepository trainingRepository) {
@@ -30,29 +33,22 @@ public class DashboardServiceImpl implements DashboardService {
         }
         User user = userOpt.get();
 
-        // 2. Chercher la formation
-        // AVANT : On prenait une formation au hasard.
-        // MAINTENANT : On met null, car un nouvel inscrit n'a rien acheté.
+        // 2. Simulation : Pas de formation pour le moment
         Training training = null;
 
-        // 3. Calculer les Statistiques (Tout à 0)
+        // 3. Calculer les Statistiques
         DashboardSummary.Statistics stats = new DashboardSummary.Statistics();
 
-        // Si plus tard on a une formation, on remplira ça. Pour l'instant c'est 0.
-        if (training != null) {
-            stats.setFormationsSuivies(1);
-            stats.setHeuresFormation(35); // Exemple
-            stats.setAttestations(0);
-        } else {
-            stats.setFormationsSuivies(0);
-            stats.setHeuresFormation(0);
-            stats.setAttestations(0);
-        }
+        // J'ai enlevé le "if (training != null)" car c'est du code mort pour l'instant.
+        // On met directement les stats à 0 par défaut.
+        stats.setFormationsSuivies(0);
+        stats.setHeuresFormation(0);
+        stats.setAttestations(0);
 
         // 4. Remplir le DashboardSummary
         DashboardSummary summary = new DashboardSummary();
         summary.setUser(user);
-        summary.setCurrentTraining(training); // Sera null
+        summary.setCurrentTraining(training);
         summary.setStats(stats);
 
         return summary;
