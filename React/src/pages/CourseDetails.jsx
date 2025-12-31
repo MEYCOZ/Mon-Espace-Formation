@@ -4,7 +4,7 @@ import { Container, Row, Col, Card, Button, Badge, Tab, Nav, Accordion } from 'r
 import {
     FaClock, FaUser, FaCheckCircle, FaCreditCard,
     FaCalendarAlt, FaMapMarkerAlt, FaChalkboardTeacher,
-    FaEnvelope, FaExclamationTriangle
+    FaExclamationTriangle
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { catalogueData } from '../utils/data';
@@ -151,28 +151,18 @@ const CourseDetails = () => {
                                                         <ul className="list-unstyled text-muted small mb-0">
                                                             {module.content.map((item, i) => (
                                                                 <li key={i} className="mb-1 d-flex gap-2">
-                                                                    <span className="text-warning">OpenBook</span> {item}
+                                                                    <span className="text-warning">•</span> {item}
                                                                 </li>
-                                                                // Note: Using "OpenBook" icon representation as standard bullet point replacement if needed, 
-                                                                // but here simple text alignment is fine. Replaced with custom render below.
                                                             ))}
                                                         </ul>
                                                     </div>
                                                 ))}
                                             </div>
                                         ) : (
-                                            /* Fallback if program structure not fully defined in data for other courses */
                                             <Accordion defaultActiveKey="0" flush>
-                                                {/* Static fallback or simplified view would go here. 
-                                                  Since we populated data for id=1, we use the map above. */}
                                                 <p>Programme détaillé bientôt disponible.</p>
                                             </Accordion>
                                         )}
-
-                                        {/* Re-rendering program loop to match design better - using simple list with icons */}
-                                        <div className="mt-4">
-                                            {/* The loop above is good, let's refine the list items inside */}
-                                        </div>
                                     </Tab.Pane>
 
                                     <Tab.Pane eventKey="prerequis">
@@ -210,9 +200,16 @@ const CourseDetails = () => {
                                     <h5 className="fw-bold text-primary mb-3">Tarif de la formation</h5>
                                     <div className="display-6 fw-bold mb-1">{course.price.replace('€', '')}€</div>
                                     <p className="text-muted small mb-4">TTC - Paiement intégral requis</p>
-                                    <Button variant="light" size="lg" className="w-100 fw-bold d-flex align-items-center justify-content-center gap-2" style={{ color: theme.colors.accent, backgroundColor: '#fff8e1' }}>
+                                    
+                                    {/* Modification : Link vers l'inscription au lieu du Button */}
+                                    <Link 
+                                        to={`/inscription/${course.id}`}
+                                        className="btn btn-light btn-lg w-100 fw-bold d-flex align-items-center justify-content-center gap-2 text-decoration-none"
+                                        style={{ color: theme.colors.accent, backgroundColor: '#fff8e1' }}
+                                    >
                                         <FaCreditCard /> Paiement sécurisé par CB
-                                    </Button>
+                                    </Link>
+
                                 </Card.Body>
                             </Card>
 

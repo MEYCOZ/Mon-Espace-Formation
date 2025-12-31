@@ -2,26 +2,28 @@ import React, { useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Routes, Route, useLocation } from 'react-router-dom';
 
+// --- IMPORTS DES PAGES ---
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Catalogue from './pages/Catalogue';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import Register from './pages/Register'; // Inscription au site (Compte)
 import CourseDetails from './pages/CourseDetails';
 import About from './pages/About';
 import Contact from './pages/Contact';
-
-// 👇 1. IMPORT DU DASHBOARD
 import Dashboard from './pages/Dashboard'; 
+
+// 👇 1. IMPORT DE LA PAGE DE PAIEMENT
+import InscriptionPage from './pages/InscriptionPage'; 
 
 function App() {
   const location = useLocation();
   
-  // On détecte si on est sur une page d'authentification
-  const isAuthPage = location.pathname === '/connexion' || location.pathname === '/inscription';
+  // On cache le header/footer sur les pages de connexion/inscription compte
+  const isAuthPage = location.pathname === '/connexion' || location.pathname === '/inscription-compte';
 
-  // Scroll to top on route change
+  // Scroll en haut de page à chaque changement de route
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -29,27 +31,33 @@ function App() {
   return (
     <div className="d-flex flex-column min-vh-100">
 
-      {/* Affiche le Header SEULEMENT si on n'est PAS sur login/register */}
-      {/* Note : Le Dashboard aura donc le Header, ce qui est normal */}
       {!isAuthPage && <Header />}
 
       <main className="flex-grow-1">
         <Routes>
           <Route path="/" element={<Home />} />
+          
+          {/* Catalogue des formations */}
           <Route path="/formations" element={<Catalogue />} />
+          
+          {/* Détail d'une formation */}
           <Route path="/formations/:id" element={<CourseDetails />} />
+          
+          {/* 👇 2. LA ROUTE POUR LE PAIEMENT (Lien depuis CourseDetails) */}
+          <Route path="/inscription/:id" element={<InscriptionPage />} />
+
+          {/* Connexion / Inscription au site */}
           <Route path="/connexion" element={<Login />} />
           <Route path="/inscription" element={<Register />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-
-          {/* 👇 2. AJOUT DE LA ROUTE DASHBOARD */}
+          
+          {/* Espace membre */}
           <Route path="/dashboard" element={<Dashboard />} />
           
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
 
-      {/* Affiche le Footer SEULEMENT si on n'est PAS sur login/register */}
       {!isAuthPage && <Footer />}
     </div>
   );
