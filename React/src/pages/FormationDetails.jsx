@@ -1,34 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Badge, Tab, Nav, Accordion } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Badge, Tab, Nav, Accordion, Spinner, Alert } from 'react-bootstrap';
 import {
     FaClock, FaUser, FaCheckCircle, FaCreditCard,
     FaCalendarAlt, FaMapMarkerAlt, FaChalkboardTeacher,
-    FaExclamationTriangle
+    FaExclamationTriangle, FaArrowLeft
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import { catalogueData } from '../utils/data';
 import { theme } from '../utils/theme';
+import { catalogueData } from '../utils/data';
 
-const CourseDetails = () => {
+const FormationDetails = () => {
     const { id } = useParams();
-    const course = catalogueData.find(c => c.id === parseInt(id));
+    const [course, setCourse] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('objectifs');
 
-    if (!course) {
-        return (
-            <Container className="py-5 text-center">
-                <h2>Formation non trouvée</h2>
-                <Link to="/formations" className="btn btn-primary mt-3">Retour au catalogue</Link>
-            </Container>
-        );
-    }
+    // --- LOGIQUE DE RÉCUPÉRATION DES DONNÉES (AJOUTÉE) ---
+    useEffect(() => {
+        const fetchDetails = async () => {
+            try {
+                // 1. Tenter de récupérer depuis l'API Back-end
+                const response = await fetch(`http://localhost:8080/api/sessions/${id}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Détails reçus du Back-end :", data);
+                    setCourse(data);
+                } else {
+                    // Fallback sur les données statiques si l'API échoue ou ID introuvable
+                    console.warn("API erreur, recherche locale...");
+                    const localCourse = catalogueData.find(c => String(c.id) === String(id));
+                    setCourse(localCourse);
+                }
+            } catch (error) {
+                console.error("Erreur connexion API :", error);
+                const localCourse = catalogueData.find(c => String(c.id) === String(id));
+                setCourse(localCourse);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDetails();
+    }, [id]);
 
     // Animation variants
     const fadeIn = {
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
     };
+
+    if (loading) {
+        return (
+            <Container className="text-center py-5" style={{ minHeight: '100vh' }}>
+                <Spinner animation="border" variant="primary" />
+                <p className="mt-3 text-muted">Chargement des détails...</p>
+            </Container>
+        );
+    }
+
+    if (!course) {
+        return (
+            <Container className="py-5 text-center" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                <h2 className="mb-3">Formation non trouvée</h2>
+                <p className="text-muted mb-4">La formation demandée n'existe pas ou a été retirée.</p>
+                <Link to="/catalogue" className="btn btn-primary px-4 py-2 rounded-pill">
+                    <FaArrowLeft className="me-2" /> Retour au catalogue
+                </Link>
+            </Container>
+        );
+    }
 
     return (
         <div style={{ fontFamily: theme.fonts.main, backgroundColor: theme.colors.bgLight, minHeight: '100vh' }}>
@@ -38,21 +80,27 @@ const CourseDetails = () => {
                     <Row className="align-items-center">
                         <Col lg={8}>
                             <motion.div initial="hidden" animate="visible" variants={fadeIn}>
+                                <div className="mb-3">
+                                     <Link to="/catalogue" className="text-white-50 text-decoration-none small mb-3 d-inline-block">
+                                        <FaArrowLeft className="me-1" /> Retour
+                                     </Link>
+                                </div>
+                                
                                 <Badge bg="warning" text="dark" className="mb-3 px-3 py-2 fw-bold rounded-pill">
-                                    {course.category}
+                                    {course.category || "Informatique"}
                                 </Badge>
                                 <h1 className="display-5 fw-bold mb-4">{course.title}</h1>
                                 <p className="lead mb-4 opacity-75" style={{ maxWidth: '90%' }}>
-                                    {course.desc}
+                                    {course.desc || course.description || "Description complète de la formation à venir."}
                                 </p>
                                 <div className="d-flex flex-wrap gap-4 text-white-50">
                                     <div className="d-flex align-items-center gap-2">
                                         <FaClock className="text-warning" />
-                                        <span>{course.time}</span>
+                                        <span>{course.time || course.duration || "N/C"}</span>
                                     </div>
                                     <div className="d-flex align-items-center gap-2">
                                         <FaUser className="text-warning" />
-                                        <span>{course.level}</span>
+                                        <span>{course.level || "Tous niveaux"}</span>
                                     </div>
                                     <div className="d-flex align-items-center gap-2">
                                         <span className="text-warning fw-bold">€</span>
@@ -109,12 +157,13 @@ const CourseDetails = () => {
                                         <p className="text-muted mb-4">Ce que vous serez capable de faire à l'issue de cette formation</p>
 
                                         <div className="d-flex flex-column gap-3 mb-5">
-                                            {course.objectives?.map((obj, idx) => (
+                                            {/* Si les objectifs ne viennent pas de l'API, on met du texte générique */}
+                                            {(course.objectives || ["Maîtriser les concepts clés", "Mettre en pratique via des ateliers", "Réussir la certification finale"]).map((obj, idx) => (
                                                 <div key={idx} className="d-flex gap-3 align-items-start">
                                                     <FaCheckCircle className="text-success mt-1 flex-shrink-0" />
                                                     <span>{obj}</span>
                                                 </div>
-                                            )) || <p>Objectifs détaillés bientôt disponibles.</p>}
+                                            ))}
                                         </div>
 
                                         <h4 className="fw-bold mb-3" style={{ color: theme.colors.primary }}>Matériel fourni par TXLFORMA</h4>
@@ -137,7 +186,7 @@ const CourseDetails = () => {
                                     <Tab.Pane eventKey="programme">
                                         <div className="mb-4">
                                             <h4 className="fw-bold mb-2" style={{ color: theme.colors.primary }}>Programme détaillé</h4>
-                                            <p className="text-muted small">5 modules pour une maîtrise complète du sujet</p>
+                                            <p className="text-muted small">Modules pour une maîtrise complète du sujet</p>
                                         </div>
 
                                         {course.program ? (
@@ -160,7 +209,24 @@ const CourseDetails = () => {
                                             </div>
                                         ) : (
                                             <Accordion defaultActiveKey="0" flush>
-                                                <p>Programme détaillé bientôt disponible.</p>
+                                                <Accordion.Item eventKey="0">
+                                                    <Accordion.Header>Module 1 : Introduction et Fondamentaux</Accordion.Header>
+                                                    <Accordion.Body>
+                                                        Découverte de l'écosystème, installation des outils et premiers pas pratiques.
+                                                    </Accordion.Body>
+                                                </Accordion.Item>
+                                                <Accordion.Item eventKey="1">
+                                                    <Accordion.Header>Module 2 : Concepts Avancés</Accordion.Header>
+                                                    <Accordion.Body>
+                                                        Approfondissement des notions, architecture logicielle et bonnes pratiques.
+                                                    </Accordion.Body>
+                                                </Accordion.Item>
+                                                <Accordion.Item eventKey="2">
+                                                    <Accordion.Header>Module 3 : Projet Pratique</Accordion.Header>
+                                                    <Accordion.Body>
+                                                        Réalisation d'un projet complet de A à Z encadré par le formateur.
+                                                    </Accordion.Body>
+                                                </Accordion.Item>
                                             </Accordion>
                                         )}
                                     </Tab.Pane>
@@ -170,19 +236,19 @@ const CourseDetails = () => {
                                         <p className="text-muted mb-4">Compétences nécessaires pour suivre cette formation</p>
 
                                         <div className="d-flex flex-column gap-3 mb-5">
-                                            {course.prerequisites?.map((req, idx) => (
+                                            {(course.prerequisites || ["Aisance avec l'outil informatique", "Motivation d'apprendre"]).map((req, idx) => (
                                                 <div key={idx} className="d-flex gap-3 align-items-center text-muted">
                                                     <span className="fw-bold text-muted border rounded-circle d-flex align-items-center justify-content-center" style={{ width: '24px', height: '24px', fontSize: '12px' }}>{idx + 1}</span>
                                                     <span>{req}</span>
                                                 </div>
-                                            )) || <p>Aucun prérequis spécifique.</p>}
+                                            ))}
                                         </div>
 
                                         <div className="alert alert-warning border-0 d-flex gap-3 align-items-start" role="alert" style={{ backgroundColor: '#fff3cd', color: '#856404' }}>
                                             <FaExclamationTriangle className="mt-1 flex-shrink-0" />
                                             <div>
                                                 <h6 className="fw-bold mb-1">Important</h6>
-                                                <p className="mb-0 small">Les formations se déroulent exclusivement en présentiel dans nos salles équipées. Tout le matériel informatique est fourni par TXLFORMA.</p>
+                                                <p className="mb-0 small">Les formations se déroulent exclusivement en présentiel dans nos salles équipées (ou en distanciel selon la session). Tout le matériel informatique est fourni par TXLFORMA.</p>
                                             </div>
                                         </div>
                                     </Tab.Pane>
@@ -198,16 +264,17 @@ const CourseDetails = () => {
                             <Card className="border-2 border-warning shadow-sm text-center p-3" style={{ borderColor: theme.colors.accent }}>
                                 <Card.Body>
                                     <h5 className="fw-bold text-primary mb-3">Tarif de la formation</h5>
-                                    <div className="display-6 fw-bold mb-1">{course.price.replace('€', '')}€</div>
+                                    <div className="display-6 fw-bold mb-1">
+                                        {course.price ? String(course.price).replace('€', '') : '---'}€
+                                    </div>
                                     <p className="text-muted small mb-4">TTC - Paiement intégral requis</p>
                                     
-                                    {/* Modification : Link vers l'inscription au lieu du Button */}
                                     <Link 
                                         to={`/inscription/${course.id}`}
                                         className="btn btn-light btn-lg w-100 fw-bold d-flex align-items-center justify-content-center gap-2 text-decoration-none"
                                         style={{ color: theme.colors.accent, backgroundColor: '#fff8e1' }}
                                     >
-                                        <FaCreditCard /> Paiement sécurisé par CB
+                                        <FaCreditCard /> M'inscrire maintenant
                                     </Link>
 
                                 </Card.Body>
@@ -216,26 +283,23 @@ const CourseDetails = () => {
                             {/* Sessions Card */}
                             <Card className="border-0 shadow-sm p-3">
                                 <Card.Body>
-                                    <h5 className="fw-bold text-primary mb-3">Sessions disponibles</h5>
-                                    <p className="text-muted small mb-4">Sélectionnez une session pour vous inscrire</p>
+                                    <h5 className="fw-bold text-primary mb-3">Prochaine session</h5>
+                                    <p className="text-muted small mb-4">Date et lieu de la formation</p>
 
                                     <div className="d-flex flex-column gap-3">
-                                        {[
-                                            { date: "Du 15 décembre 2025", places: 8, salle: "Salle 1 - TXLFORMA Paris", prof: "Alice ROMAINVILLE" },
-                                            { date: "Du 20 janvier 2026", places: 12, salle: "Salle 2 - TXLFORMA Paris", prof: "Roger DURAND" },
-                                            { date: "Du 10 février 2026", places: 5, salle: "Salle 1 - TXLFORMA Paris", prof: "Lionel PRIGENT" }
-                                        ].map((session, idx) => (
-                                            <div key={idx} className="border rounded-3 p-3 position-relative hover-shadow" style={{ cursor: 'pointer', transition: 'box-shadow 0.2s' }}>
-                                                <Badge bg="dark" className="position-absolute top-0 end-0 m-2 rounded-pill">{session.places} places</Badge>
-                                                <div className="d-flex gap-2 align-items-center fw-bold mb-2 text-dark">
-                                                    <FaCalendarAlt className="text-primary" /> {session.date}
-                                                </div>
-                                                <div className="small text-muted d-flex flex-column gap-1">
-                                                    <div className="d-flex gap-2 align-items-center"><FaMapMarkerAlt /> {session.salle}</div>
-                                                    <div className="d-flex gap-2 align-items-center"><FaChalkboardTeacher /> Formateur : {session.prof}</div>
-                                                </div>
+                                        {/* On affiche les infos dynamiques de la session en cours */}
+                                        <div className="border rounded-3 p-3 position-relative hover-shadow" style={{ cursor: 'pointer', transition: 'box-shadow 0.2s' }}>
+                                            <Badge bg="dark" className="position-absolute top-0 end-0 m-2 rounded-pill">
+                                                {course.placesTotales ? `${course.placesTotales} places` : "Ouvert"}
+                                            </Badge>
+                                            <div className="d-flex gap-2 align-items-center fw-bold mb-2 text-dark">
+                                                <FaCalendarAlt className="text-primary" /> {course.dates || course.startDate || "Dates à confirmer"}
                                             </div>
-                                        ))}
+                                            <div className="small text-muted d-flex flex-column gap-1">
+                                                <div className="d-flex gap-2 align-items-center"><FaMapMarkerAlt /> {course.lieu || course.location || "Distanciel"}</div>
+                                                <div className="d-flex gap-2 align-items-center"><FaChalkboardTeacher /> Formateur : {course.trainerName || "Expert certifié"}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </Card.Body>
                             </Card>
@@ -254,4 +318,4 @@ const CourseDetails = () => {
     );
 };
 
-export default CourseDetails;
+export default FormationDetails;

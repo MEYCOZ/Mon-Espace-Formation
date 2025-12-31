@@ -9,7 +9,7 @@ import Home from './pages/Home';
 import Catalogue from './pages/Catalogue';
 import Login from './pages/Login';
 import Register from './pages/Register'; // Inscription au site (Compte)
-import CourseDetails from './pages/CourseDetails';
+import CourseDetails from './pages/FormationDetails';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard'; 
