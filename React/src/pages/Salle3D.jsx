@@ -22,9 +22,18 @@ export default function Salle3D() {
     setLabel(l);
   };
 
+  const navigate = useNavigate(); // ✅ MANQUAIT
+
   return (
     <div style={{ width: "100%" }}>
-      <div style={{ position: "relative", height: "90vh", width: "100%", overflow: "hidden" }}>
+      <div
+        style={{
+          position: "relative",
+          height: "90vh",
+          width: "100%",
+          overflow: "hidden",
+        }}
+      >
         <Canvas style={{ width: "100%", height: "100%" }} camera={{ fov: 60 }}>
           <ambientLight intensity={0.1} />
           <Suspense fallback={null}>
@@ -32,7 +41,6 @@ export default function Salle3D() {
               <Salle on={on} toggle={() => setOn((v) => !v)} />
               <Player eyeHeight={1.5} />
 
-              {/* ✅ Détection centre écran */}
               <InteractionRaycaster
                 onChange={(v, l) => onInteractChangeRef.current(v, l)}
               />
@@ -45,28 +53,36 @@ export default function Salle3D() {
         <InteractHint visible={canInteract} label={label} />
         <ControlsHint lightOn={on} />
 
-        {/* bouton quitter (le tien) */}
-        <button
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={() => {
-            if (document.pointerLockElement) document.exitPointerLock();
-            navigate("/");
-          }}
-          style={{
-            position: "absolute",
-            top: 16,
-            right: 16,
-            zIndex: 30,
-            padding: "10px 12px",
-            borderRadius: 10,
-            border: "1px solid rgba(255,255,255,0.25)",
-            background: "rgba(0,0,0,0.6)",
-            color: "white",
-            cursor: "pointer",
-          }}
-        >
-          Quitter la salle
-        </button>
+        {/* ✅ Bouton quitter : bloque les events AVANT le canvas */}
+<button
+  type="button"
+  onPointerDownCapture={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (document.pointerLockElement) document.exitPointerLock();
+    navigate("/");
+  }}
+  onClickCapture={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }}
+  style={{
+    position: "absolute",
+    top: 16,
+    right: 16,
+    zIndex: 9999,
+    padding: "10px 12px",
+    borderRadius: 10,
+    border: "1px solid rgba(255,255,255,0.25)",
+    background: "rgba(0,0,0,0.6)",
+    color: "white",
+    cursor: "pointer",
+    pointerEvents: "auto",
+  }}
+>
+  Quitter la salle
+</button>
+
       </div>
     </div>
   );
