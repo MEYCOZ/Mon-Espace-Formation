@@ -22,23 +22,57 @@ const Catalogue = () => {
     const [formations, setFormations] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // --- RECUPERATION DU BACK-END ---
+    // --- RECUPERATION DU BACK-END AVEC FILTRE ---
     useEffect(() => {
         const fetchFormations = async () => {
             try {
-                // On appelle ton API Spring Boot
-                const response = await fetch('http://localhost:8080/api/sessions');
+                // 1. Récupérer TOUTES les sessions depuis le Back-end
+                const sessionsRes = await fetch('http://localhost:8080/api/sessions');
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("Données chargées depuis le Back-end :", data);
-                    setFormations(data);
+                if (!sessionsRes.ok) throw new Error("Erreur API Sessions");
+                
+                const sessionsData = await sessionsRes.json();
+                
+                // 2. Vérifier si un utilisateur est connecté
+                const storedUser = localStorage.getItem('user');
+
+                if (storedUser) {
+                    const currentUser = JSON.parse(storedUser);
+                    
+                    // 3. Récupérer SES inscriptions
+                    // On utilise l'ID trouvé (id, _id ou userId)
+                    const userId = currentUser.id || currentUser._id || currentUser.userId;
+
+                    if (userId) {
+                        const inscriptionsRes = await fetch(`http://localhost:8080/api/inscriptions/user/${userId}`);
+                        
+                        if (inscriptionsRes.ok) {
+                            const inscriptionsData = await inscriptionsRes.json();
+                            
+                            // 4. FILTRAGE : On enlève les sessions où il est déjà inscrit
+                            const sessionIdsInscrites = inscriptionsData.map(insc => insc.sessionId);
+                            
+                            const formationsNonInscrites = sessionsData.filter(session => 
+                                !sessionIdsInscrites.includes(session.id)
+                            );
+                            
+                            setFormations(formationsNonInscrites);
+                        } else {
+                            // Si erreur inscriptions, on montre tout par sécurité
+                            setFormations(sessionsData);
+                        }
+                    } else {
+                        // ID introuvable dans le localStorage -> on montre tout
+                        setFormations(sessionsData);
+                    }
                 } else {
-                    throw new Error("Erreur réponse API");
+                    // Si pas connecté, on montre tout le catalogue
+                    setFormations(sessionsData);
                 }
+
             } catch (error) {
                 console.error("Erreur API, utilisation des données statiques :", error);
-                // Si ça plante, on remet les fausses données pour ne pas casser le design
+                // Fallback données statiques si le serveur est éteint
                 setFormations(catalogueData);
             } finally {
                 setLoading(false);
@@ -108,7 +142,7 @@ const Catalogue = () => {
                 ) : (
                     <motion.div variants={staggerContainer} initial="hidden" animate="visible">
                         <Row className="g-4 align-items-stretch">
-                            {/* ICI : On boucle sur 'formations' (API) au lieu de 'catalogueData' */}
+                            {/* BOUCLE SUR LES FORMATIONS FILTRÉES */}
                             {formations.map((formation) => (
                                 <Col lg={4} md={6} key={formation.id}>
                                     <motion.div
@@ -127,7 +161,6 @@ const Catalogue = () => {
                                                 </span>
 
                                                 <span className="position-absolute bottom-0 start-0 m-3 px-2 py-1 bg-white rounded-pill shadow-sm small fw-bold" style={{ fontSize: '0.7rem' }}>
-                                                    {/* Supporte le champ 'sessions' (statique) OU 'placesTotales' (API) */}
                                                     {formation.sessions || formation.placesTotales || 10} places disponibles
                                                 </span>
                                             </div>

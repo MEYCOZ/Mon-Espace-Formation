@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
+// @CrossOrigin(origins = "http://localhost:5173") // Décommentez si besoin
 public class AuthController {
 
     @Autowired
@@ -22,43 +23,36 @@ public class AuthController {
     // --- ROUTE INSCRIPTION ---
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        // 1. On vérifie si l'email existe déjà
         if (userRepository.existsByEmail(user.getEmail())) {
             return ResponseEntity.badRequest().body(Map.of("message", "Erreur : Cet email est déjà utilisé !"));
         }
-
-        // 2. On crypte le mot de passe avant de le sauvegarder
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        // 3. On sauvegarde dans la base de données
         userRepository.save(user);
-
         return ResponseEntity.ok(Map.of("message", "Inscription réussie !"));
     }
 
-    // --- ROUTE CONNEXION ---
+    // --- ROUTE CONNEXION (CORRIGÉE) ---
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginData) {
         String email = loginData.get("email");
         String password = loginData.get("password");
 
-        // 1. On cherche l'utilisateur
         Optional<User> userOpt = userRepository.findByEmail(email);
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            // 2. On compare le mot de passe envoyé avec celui crypté
+            
+            // Vérification du mot de passe
             if (passwordEncoder.matches(password, user.getPassword())) {
-                return ResponseEntity.ok(Map.of(
-                        "message", "Connexion réussie",
-                        "prenom", user.getPrenom(),
-                        "nom", user.getNom(),
-                        "email", user.getEmail()
-                ));
+                
+                // 👇 LA CORRECTION EST ICI 👇
+                // Au lieu de construire une Map manuelle incomplète, 
+                // on renvoie TOUT l'objet user. 
+                // Comme ça, l'ID est envoyé automatiquement.
+                return ResponseEntity.ok(user);
             }
         }
 
-        // Si ça rate
         return ResponseEntity.status(401).body(Map.of("message", "Email ou mot de passe incorrect"));
     }
 }
