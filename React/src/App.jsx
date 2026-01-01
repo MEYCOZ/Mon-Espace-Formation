@@ -13,6 +13,7 @@ import CourseDetails from './pages/FormationDetails';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Dashboard from './pages/Dashboard'; 
+import Salle3D from "./pages/Salle3D";
 
 // 👇 1. IMPORT DE LA PAGE DE PAIEMENT
 import InscriptionPage from './pages/InscriptionPage'; 
@@ -37,6 +38,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           
+          {/* Salle 3D */}
+          <Route path="/salle" element={<Salle3D />} />
+
           {/* Catalogue des formations */}
           <Route path="/formations" element={<Catalogue />} />
           

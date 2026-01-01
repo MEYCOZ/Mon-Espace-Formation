@@ -44,9 +44,11 @@ const Home = () => {
                                     <Button size="lg" className="fw-bold rounded-1 px-4 border-0 text-white" style={{ backgroundColor: theme.colors.accent }}>
                                         Découvrir les formations →
                                     </Button>
-                                    <Button variant="light" size="lg" className="fw-bold rounded-1 px-4" style={{ color: theme.colors.primary }}>
-                                        Découvrir nos salles
-                                    </Button>
+                                    <Link to="/salle" style={{ textDecoration: "none" }}>
+                                        <Button variant="light" size="lg" className="fw-bold rounded-1 px-4" style={{ color: theme.colors.primary }}>
+                                            Découvrir nos salles
+                                        </Button>
+                                    </Link>
                                 </motion.div>
 
                                 {/* Stats Row */}
