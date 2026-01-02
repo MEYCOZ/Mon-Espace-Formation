@@ -17,6 +17,8 @@ import Salle3D from "./pages/Salle3D";
 
 // 👇 1. IMPORT DE LA PAGE DE PAIEMENT
 import InscriptionPage from './pages/InscriptionPage'; 
+// 👇 AJOUT : IMPORT DE LA PAGE DE SUCCÈS
+import RegistrationSuccess from './pages/RegistrationSuccess';
 
 function App() {
   const location = useLocation();
@@ -49,6 +51,9 @@ function App() {
           
           {/* 👇 2. LA ROUTE POUR LE PAIEMENT (Lien depuis CourseDetails) */}
           <Route path="/inscription/:id" element={<InscriptionPage />} />
+
+          {/* 👇 AJOUT : LA ROUTE DE CONFIRMATION D'INSCRIPTION */}
+          <Route path="/succes-inscription" element={<RegistrationSuccess />} />
 
           {/* Connexion / Inscription au site */}
           <Route path="/connexion" element={<Login />} />

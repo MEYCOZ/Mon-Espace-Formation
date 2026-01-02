@@ -65,7 +65,8 @@ const FormationDetails = () => {
             <Container className="py-5 text-center" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <h2 className="mb-3">Formation non trouvée</h2>
                 <p className="text-muted mb-4">La formation demandée n'existe pas ou a été retirée.</p>
-                <Link to="/catalogue" className="btn btn-primary px-4 py-2 rounded-pill">
+                {/* CORRECTION ICI : /catalogue -> /formations */}
+                <Link to="/formations" className="btn btn-primary px-4 py-2 rounded-pill">
                     <FaArrowLeft className="me-2" /> Retour au catalogue
                 </Link>
             </Container>
@@ -81,7 +82,8 @@ const FormationDetails = () => {
                         <Col lg={8}>
                             <motion.div initial="hidden" animate="visible" variants={fadeIn}>
                                 <div className="mb-3">
-                                     <Link to="/catalogue" className="text-white-50 text-decoration-none small mb-3 d-inline-block">
+                                     {/* CORRECTION ICI : /catalogue -> /formations */}
+                                     <Link to="/formations" className="text-white-50 text-decoration-none small mb-3 d-inline-block">
                                         <FaArrowLeft className="me-1" /> Retour
                                      </Link>
                                 </div>

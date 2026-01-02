@@ -66,7 +66,7 @@ const InscriptionPage = () => {
       }));
   };
 
-  // --- CORRECTION CRITIQUE ICI ---
+  // --- FONCTION DE PAIEMENT MODIFIÉE ---
   const handlePayment = async () => {
     if (!selectedSession) return;
 
@@ -78,9 +78,7 @@ const InscriptionPage = () => {
     }
     const currentUser = JSON.parse(storedUser);
 
-    // 👇 LA CORRECTION EST ICI 👇
-    // On cherche l'ID partout : 'id', '_id' ou 'userId'
-    // MongoDB utilise souvent '_id', alors que Java attend 'id'.
+    // On cherche l'ID partout
     const realUserId = currentUser.id || currentUser._id || currentUser.userId;
 
     if (!realUserId) {
@@ -89,7 +87,7 @@ const InscriptionPage = () => {
     }
 
     const dataToSend = {
-        userId: realUserId, // On envoie l'ID trouvé
+        userId: realUserId,
         formationId: id ? String(id) : "1", 
         sessionId: selectedSession,
         status: "VALIDÉ",
@@ -105,8 +103,37 @@ const InscriptionPage = () => {
         });
 
         if (response.ok) {
-            alert("✅ Inscription réussie !");
-            navigate('/dashboard'); 
+            // === C'EST ICI QUE TOUT CHANGE ===
+            
+            // 1. On retrouve les infos de la session pour l'affichage
+            const sessionDetails = sessions.find(s => s.id === selectedSession);
+            
+            // 2. On génère un numéro de commande bidon
+            const refCommande = "INS-" + Date.now().toString().slice(-8);
+
+            // 3. On redirige vers la page de succès avec les données
+            navigate('/succes-inscription', {
+                state: {
+                    course: {
+                        id: id,
+                        // On essaie de prendre le titre de la session, sinon "Formation"
+                        title: sessionDetails.title || "Formation Complète", 
+                        price: "2490€",
+                        dates: sessionDetails.dates,
+                        lieu: sessionDetails.lieu,
+                        duration: sessionDetails.duration || "5 jours",
+                        category: "Formation"
+                    },
+                    user: {
+                        nom: formData.nom,
+                        prenom: formData.prenom,
+                        email: formData.email,
+                        entreprise: formData.entreprise
+                    },
+                    reference: refCommande
+                }
+            });
+
         } else {
             const msg = await response.text();
             alert("❌ Erreur serveur : " + msg);
