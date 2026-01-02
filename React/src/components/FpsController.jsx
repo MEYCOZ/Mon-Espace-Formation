@@ -134,5 +134,5 @@ export default function FpsController({
     camera.position.y = eyeHeight;
   });
 
-  return <PointerLockControls ref={controlsRef} args={[camera, gl.domElement]} />;
+  return <PointerLockControls ref={controlsRef} camera={camera} domElement={gl.domElement} />;
 }

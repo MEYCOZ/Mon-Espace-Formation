@@ -122,7 +122,7 @@ export default function Player({ eyeHeight = 1.5 }) {
 
   return (
     <>
-      <PointerLockControls args={[camera, gl.domElement]} />
+      <PointerLockControls camera={camera} domElement={gl.domElement} />
 
       <RigidBody
         ref={body}
