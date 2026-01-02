@@ -1,4 +1,4 @@
-export default function ControlsHint({ lightOn }) {
+export default function ControlsHint({ lightOn, flashOn }) {
   return (
     <div
       style={{
@@ -20,17 +20,18 @@ export default function ControlsHint({ lightOn }) {
       <div>Se déplacer : ZQSD</div>
       <div>Regarder : souris</div>
       <div>Interagir : clic</div>
+      <div>Lampe torche : F</div>
 
-      <div style={{ marginTop: 6, opacity: 0.9 }}>
-        Échap : libérer la souris
+      <div style={{ marginTop: 6, opacity: 0.9 }}>Échap : libérer la souris</div>
+
+      {/* Status lumière */}
+      <div style={{ marginTop: 6 }}>
+        Lumière : <span style={{ fontWeight: 700 }}>{lightOn ? "ON" : "OFF"}</span>
       </div>
 
-      {/* ✅ Status lumière */}
+      {/* Status lampe */}
       <div style={{ marginTop: 6 }}>
-        Lumière :{" "}
-        <span style={{ fontWeight: 700 }}>
-          {lightOn ? "ON" : "OFF"}
-        </span>
+        Lampe : <span style={{ fontWeight: 700 }}>{flashOn ? "ON" : "OFF"}</span>
       </div>
     </div>
   );

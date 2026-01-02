@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { CapsuleCollider, RigidBody } from "@react-three/rapier";
 import { PointerLockControls } from "@react-three/drei";
 import * as THREE from "three";
-import { useThree } from "@react-three/fiber";
 
-export default function Player({ eyeHeight = 1.5 }) {
+export default function Player({ eyeHeight = 1.5, flashOn, setFlashOn }) {
   const body = useRef();
   const { camera, gl } = useThree();
+
+  // Spot light + target (lampe torche)
+  const flashRef = useRef();
+  const flashTargetRef = useRef();
 
   const keys = useRef({
     forward: false,
@@ -21,9 +24,19 @@ export default function Player({ eyeHeight = 1.5 }) {
   const forward = useMemo(() => new THREE.Vector3(), []);
   const right = useMemo(() => new THREE.Vector3(), []);
   const up = useMemo(() => new THREE.Vector3(0, 1, 0), []);
+  const tmpForward = useMemo(() => new THREE.Vector3(), []);
 
+  // Associer le target du spotlight une seule fois
+  useEffect(() => {
+    if (!flashRef.current || !flashTargetRef.current) return;
+    flashRef.current.target = flashTargetRef.current;
+  }, []);
+
+  // Keyboard input + toggle lampe sur F
   useEffect(() => {
     const onKeyDown = (e) => {
+      if (e.repeat) return;
+
       switch (e.code) {
         case "KeyW":
         case "KeyZ":
@@ -43,6 +56,12 @@ export default function Player({ eyeHeight = 1.5 }) {
         case "ShiftRight":
           keys.current.sprint = true;
           break;
+
+        // ✅ lampe torche
+        case "KeyF":
+          setFlashOn((v) => !v);
+          break;
+
         default:
           break;
       }
@@ -79,9 +98,9 @@ export default function Player({ eyeHeight = 1.5 }) {
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("keyup", onKeyUp);
     };
-  }, []);
+  }, [setFlashOn]);
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     const rb = body.current;
     if (!rb) return;
 
@@ -104,7 +123,6 @@ export default function Player({ eyeHeight = 1.5 }) {
 
     if (dir.lengthSq() > 0) dir.normalize();
 
-    // On garde la composante Y actuelle (gravité), mais on force la position caméra ensuite
     const v = rb.linvel();
     rb.setLinvel(
       {
@@ -118,11 +136,35 @@ export default function Player({ eyeHeight = 1.5 }) {
     // Caméra suit le rigidbody, hauteur yeux
     const p = rb.translation();
     camera.position.set(p.x, p.y + eyeHeight, p.z);
+
+    // Lampe suit la caméra
+    if (flashRef.current && flashTargetRef.current) {
+      flashRef.current.position.copy(camera.position);
+
+      camera.getWorldDirection(tmpForward);
+      flashTargetRef.current.position
+        .copy(camera.position)
+        .add(tmpForward.multiplyScalar(5));
+
+      flashTargetRef.current.updateMatrixWorld();
+    }
   });
 
   return (
     <>
-      <PointerLockControls camera={camera} domElement={gl.domElement} />
+      <PointerLockControls args={[camera, gl.domElement]} />
+
+      {/* Spot light : intensité 0 si OFF */}
+      <spotLight
+        ref={flashRef}
+        intensity={flashOn ? 6 : 0}
+        distance={18}
+        angle={0.35}
+        penumbra={0.5}
+        decay={2}
+        castShadow={false}
+      />
+      <object3D ref={flashTargetRef} />
 
       <RigidBody
         ref={body}
@@ -133,7 +175,6 @@ export default function Player({ eyeHeight = 1.5 }) {
         enabledRotations={[false, false, false]}
         friction={0.0}
       >
-        {/* Capsule: rayon 0.25m, demi-hauteur 0.45m => hauteur ~1.15m */}
         <CapsuleCollider args={[0.45, 0.25]} />
       </RigidBody>
     </>

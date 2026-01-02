@@ -18,10 +18,14 @@ export default function Salle3D() {
 
   const [lightOn, setLightOn] = useState(false);
 
-  // un état par laptop (clé = actionName)
+  // ✅ lampe torche (remontée pour ControlsHint)
+  const [flashOn, setFlashOn] = useState(false);
+
+  // ✅ un état par laptop (clé = actionName)
   const [laptopForwardMap, setLaptopForwardMap] = useState({});
   const [laptopToPlay, setLaptopToPlay] = useState(null); // { actionName, forward }
 
+  // HUD
   const [canInteract, setCanInteract] = useState(false);
   const [label, setLabel] = useState("");
   const [kind, setKind] = useState(null);
@@ -71,10 +75,17 @@ export default function Salle3D() {
           gl={{ powerPreference: "high-performance" }}
         >
           <ambientLight intensity={0.1} />
+
           <Suspense fallback={null}>
             <Physics gravity={[0, -9.81, 0]}>
               <Salle on={lightOn} laptopToPlay={laptopToPlay} />
-              <Player eyeHeight={1.5} />
+
+              <Player
+                eyeHeight={1.5}
+                flashOn={flashOn}
+                setFlashOn={setFlashOn}
+              />
+
               <InteractionRaycaster onChange={onChange} maxDistance={3} />
             </Physics>
           </Suspense>
@@ -82,14 +93,16 @@ export default function Salle3D() {
 
         <Crosshair active={canInteract} />
         <InteractHint visible={canInteract} label={label} />
-        <ControlsHint lightOn={lightOn} />
+        <ControlsHint lightOn={lightOn} flashOn={flashOn} />
 
         <button
           type="button"
           onPointerDownCapture={(e) => {
             e.preventDefault();
             e.stopPropagation();
+
             if (document.pointerLockElement) document.exitPointerLock();
+
             navigate("/");
           }}
           onClickCapture={(e) => {
